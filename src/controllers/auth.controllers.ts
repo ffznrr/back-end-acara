@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as Yup from "yup";
+import UserModel from "../models/user.models";
 
 type TRegister = {
   fullName: string;
@@ -21,7 +22,13 @@ export default {
   async register(req: Request, res: Response) {
     const { fullName, username, email, password, confirmPassword } =
       req.body as TRegister;
-    console.log(req.body);
+
+    const result = await UserModel.create({
+      fullName,
+      email,
+      username,
+      password,
+    });
 
     try {
       await registerValidateSchema.validate({
@@ -34,11 +41,7 @@ export default {
 
       res.status(200).json({
         message: "succes Registration",
-        data: {
-          fullName,
-          username,
-          email,
-        },
+        data: result,
       });
     } catch (error) {
       const err = error as Error;
